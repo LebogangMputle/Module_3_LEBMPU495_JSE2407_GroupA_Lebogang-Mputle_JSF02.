@@ -10,7 +10,7 @@
   let loading = true;
   let error = null;
   let selectedProduct = null;
-  let sortOption = 'az';
+  let sortOption = 'default'; // Added default sorting option
   let filterCategory = '';
   let searchQuery = '';
 
@@ -55,6 +55,9 @@
       displayedProducts.sort((a, b) => a.title.localeCompare(b.title));
     } else if (sortOption === 'za') {
       displayedProducts.sort((a, b) => b.title.localeCompare(a.title));
+    } else if (sortOption === 'default') {
+      // No sorting applied, use the original order
+      displayedProducts = [...products];
     }
   };
 
@@ -116,6 +119,7 @@
         <div>
           <label for="sort" class="mr-2">Sort by:</label>
           <select id="sort" on:change={handleSortChange} bind:value={sortOption} class="border border-blue-300 rounded p-1">
+            <option value="default">Default</option> <!-- Added default sorting option -->
             <option value="az">A-Z</option>
             <option value="za">Z-A</option>
           </select>
