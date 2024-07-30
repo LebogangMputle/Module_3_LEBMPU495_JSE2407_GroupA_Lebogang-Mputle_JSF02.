@@ -1,9 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { cart } from '../store/stores';
   import ProductCard from './components/ProductCard.svelte';
   import Error from './components/Error.svelte';
   import CardSkeleton from './components/CardSkeleton.svelte';
-  
+
   let products = [];
   let displayedProducts = [];
   let loading = true;
@@ -13,7 +14,6 @@
   let filterCategory = '';
   let searchQuery = '';
 
-  // Fetch products from the Fake Store API
   onMount(async () => {
     try {
       const response = await fetch('https://fakestoreapi.com/products');
@@ -30,8 +30,16 @@
     }
   });
 
-  const handleProductClick = (event) => {
-    selectedProduct = event.detail;
+  const handleProductClick = async (productId: number) => {
+    try {
+      const response = await fetch(`https://fakestoreapi.com/products/${productId}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      selectedProduct = await response.json();
+    } catch (err) {
+      error = err.message;
+    }
   };
 
   const goBack = () => {
@@ -64,22 +72,33 @@
     searchQuery = event.target.value;
     sortProducts();
   };
+
+  const addToCart = (product) => {
+    cart.update(items => {
+      const itemInCart = items.find(item => item.id === product.id);
+      if (itemInCart) {
+        return items.map(item => 
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      }
+      return [...items, { ...product, quantity: 1 }];
+    });
+  };
 </script>
 
 <main>
   <div class="p-4">
     {#if selectedProduct}
       <button on:click={goBack} class="mb-4 px-4 py-2 bg-blue-500 text-white rounded">Back</button>
-      <div class="p-4 max-w-xs mx-auto bg-white border border-gray-300 rounded-lg shadow">
-        <img src={selectedProduct.image} alt={selectedProduct.title} class="h-48 bg-gray-300 rounded-t-lg" />
-        <div class="p-4">
-          <h2 class="text-lg font-bold mb-2">{selectedProduct.title}</h2>
-          <p class="mb-2">Category: {selectedProduct.category}</p>
-          <p class="mb-2">Price: ${selectedProduct.price}</p>
-          <p class="mb-2">Rating: {selectedProduct.rating.rate} ({selectedProduct.rating.count} reviews)</p>
-          <p class="mb-2">Description: {selectedProduct.description}</p>
-        </div>
-      </div>
+      <ProductCard 
+        id={selectedProduct.id} 
+        title={selectedProduct.title} 
+        image={selectedProduct.image} 
+        price={selectedProduct.price} 
+        rating={selectedProduct.rating} 
+        category={selectedProduct.category} 
+        description={selectedProduct.description} 
+        showDescription={true} />
     {:else if loading}
       <div class="grid justify-center">
         <div class="lg:max-h-[130rem] max-w-xl mx-auto grid gap-4 grid-cols-1 lg:grid-cols-4 md:grid-cols-2 items-center lg:max-w-none my-4">
@@ -117,7 +136,16 @@
       <div class="grid justify-center">
         <div class="lg:max-h-[130rem] max-w-xl mx-auto grid gap-4 grid-cols-1 lg:grid-cols-4 md:grid-cols-2 items-center lg:max-w-none my-4">
           {#each displayedProducts as product (product.id)}
-            <ProductCard {...product} on:click={handleProductClick} />
+            <ProductCard 
+              id={product.id} 
+              title={product.title} 
+              image={product.image} 
+              price={product.price} 
+              rating={product.rating} 
+              category={product.category} 
+              description={product.description} 
+              showDescription={false}
+              on:click={() => handleProductClick(product.id)} />
           {/each}
         </div>
       </div>
