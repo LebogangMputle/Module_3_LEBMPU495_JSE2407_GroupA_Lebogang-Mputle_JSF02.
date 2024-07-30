@@ -1,9 +1,8 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
-  import { navigate } from 'svelte-routing';
+  import ProductCard from './components/ProductCard.svelte';
   import Error from './components/Error.svelte';
   import CardSkeleton from './components/CardSkeleton.svelte';
-  import ProductCard from './components/ProductCard.svelte';
   
   let products = [];
   let displayedProducts = [];
@@ -30,10 +29,6 @@
       loading = false;
     }
   });
-
-  const handleLogoClick = () => {
-    navigate('/');
-  };
 
   const handleProductClick = (event) => {
     selectedProduct = event.detail;
@@ -75,7 +70,7 @@
   <div class="p-4">
     {#if selectedProduct}
       <button on:click={goBack} class="mb-4 px-4 py-2 bg-blue-500 text-white rounded">Back</button>
-      <div class="p-4 max-w-xs mx-auto bg-gray-200 border border-gray-300 rounded-lg shadow">
+      <div class="p-4 max-w-xs mx-auto bg-white border border-gray-300 rounded-lg shadow">
         <img src={selectedProduct.image} alt={selectedProduct.title} class="h-48 bg-gray-300 rounded-t-lg" />
         <div class="p-4">
           <h2 class="text-lg font-bold mb-2">{selectedProduct.title}</h2>
@@ -101,14 +96,14 @@
       <div class="flex justify-between items-center mb-4">
         <div>
           <label for="sort" class="mr-2">Sort by:</label>
-          <select id="sort" on:change={handleSortChange} bind:value={sortOption}>
+          <select id="sort" on:change={handleSortChange} bind:value={sortOption} class="border border-blue-300 rounded p-1">
             <option value="az">A-Z</option>
             <option value="za">Z-A</option>
           </select>
         </div>
         <div>
           <label for="category" class="mr-2">Filter by category:</label>
-          <select id="category" on:change={handleCategoryChange} bind:value={filterCategory}>
+          <select id="category" on:change={handleCategoryChange} bind:value={filterCategory} class="border border-blue-300 rounded p-1">
             <option value="">All</option>
             {#each [...new Set(products.map(product => product.category))] as category}
               <option value={category}>{category}</option>
@@ -116,7 +111,7 @@
           </select>
         </div>
         <div>
-          <input type="text" placeholder="Search" on:input={handleSearchChange} bind:value={searchQuery} />
+          <input type="text" placeholder="Search" on:input={handleSearchChange} bind:value={searchQuery} class="border border-blue-300 rounded p-1" />
         </div>
       </div>
       <div class="grid justify-center">

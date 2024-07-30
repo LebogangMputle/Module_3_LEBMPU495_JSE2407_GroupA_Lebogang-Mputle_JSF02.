@@ -3,6 +3,8 @@ import { writable } from 'svelte/store';
 const products = writable([]);
 const loading = writable(true);
 const error = writable(null);
+export const cart = writable([]);
+export const wishlist = writable([]);
 
 export function useProductStore(selector) {
   return {
