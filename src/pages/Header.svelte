@@ -1,5 +1,10 @@
 <script>
   import { Link } from 'svelte-routing';
+  let menuOpen = false;
+
+  function toggleMenu() {
+    menuOpen = !menuOpen;
+  }
 </script>
 
 <header class="sticky z-50 top-0">
@@ -13,7 +18,26 @@
           </span>
         </button>
       </Link>
-      <div class="hidden w-full md:block md:w-auto">
+      <button
+        class="inline-flex items-center p-2 text-sm text-white rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+        on:click={toggleMenu}
+      >
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16m-7 6h7"
+          ></path>
+        </svg>
+      </button>
+      <div class={`w-full md:block md:w-auto ${menuOpen ? 'block' : 'hidden'}`}>
         <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-500 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0">
           <li>
             <Link
